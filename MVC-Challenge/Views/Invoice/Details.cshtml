@@ -1,0 +1,62 @@
+﻿@model MVC_Challenge.Models.Invoice
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div>
+    <h4>Invoice Details</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Recipient)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Recipient)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Vat)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Vat)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Total)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Total)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.InvoiceDate)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.InvoiceDate)
+        </dd>
+    </dl>
+    <table class="table table-striped">
+    <tr>
+        <td>Name</td>
+        <td>Qty</td>
+        <td>Price</td>
+        <td>Remark</td>
+    </tr>
+    @foreach(Item item in Model.Items)
+    {
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.Qty</td>
+            <td>@item.Price</td>
+            <td>@item.Remark</td>
+        </tr>
+    }
+</table>
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

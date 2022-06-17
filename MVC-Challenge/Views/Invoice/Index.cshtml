@@ -1,0 +1,36 @@
+﻿@using MVC_Challenge.Models
+@model List<Invoice>;
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="p-2"><h3>Invoice List</h3></div>
+<div class="d-flex flex-row">
+  <div class="p-1">
+     <div class="btn btn-primary text-white">
+          <a href="/Invoice/Create" class="text-black">Create</a>
+     </div>
+  </div>
+</div>
+<table class="table table-hover table-striped">
+    <tr>
+        <td>Invoice To</td>
+        <td>Invoice Date</td>
+        <td>Items</td>
+        <td>Total</td>
+        <td>Actions</td>
+    </tr>
+    @foreach(Invoice invoice in Model.ToList())
+    {
+        <tr>
+            <td>@invoice.Recipient</td>
+            <td>@invoice.InvoiceDate.ToString("dd-MM-yyyy")</td>
+            <td>@invoice.Items.Count</td>
+            <td>@invoice.Total</td>
+            <td>
+                 @Html.ActionLink("View", "Details", "Invoice",  new { id = invoice.Id}, null)
+            </td>
+        </tr>
+    }
+</table>
+

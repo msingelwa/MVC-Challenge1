@@ -1,0 +1,42 @@
+﻿
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+<div id="SkillSetDiv" class="row">  
+   
+    <div class="d-flex flex-column">
+<div class="d-flex flex-row">
+  <div class="form-group" style="margin-right: 3px;">
+    <label for="exampleInputEmail1">Name</label>
+    <input type="text" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Enter name">
+  </div>
+
+<div class="form-group" style="margin-right: 3px;">
+    <label for="exampleInputEmail1">Price</label>
+    <input type="number" class="form-control" id="price" aria-describedby="emailHelp" placeholder="Enter price">
+  </div>
+
+<div class="form-group" style="margin-right: 3px;">
+    <label for="exampleInputEmail1">Qty</label>
+    <input type="number" class="form-control" id="qty" aria-describedby="emailHelp" placeholder="Enter qty">
+  </div>
+
+<div class="form-group">
+    <label for="exampleInputEmail1">Remark</label>
+    <select class="form-control" id="remark">
+      <option>Approved</option>
+      <option>Pending</option>
+      <option>Sent</option>
+      <option>Decline</option>
+    </select>
+  </div>
+</div>
+</div>
+<div class="d-flex flex-row-reverse">
+  <div class="p-1">
+    <a type="button" href="JavaScript:void(0);" class="btn btn-danger btn-sm" id="Btn_Delete_Item" onclick="Remove(this)">
+        <i class="bi bi-trash3"></i>
+    </a>
+</div>
+</div>
+</div> 

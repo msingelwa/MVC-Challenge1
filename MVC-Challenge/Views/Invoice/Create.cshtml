@@ -1,0 +1,135 @@
+﻿@model MVC_Challenge.Models.Invoice;
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h4>Create Invoice</h4>
+<hr />
+<div class="container-fluid row">
+    <div class="col-md-6 "id="invoices">
+        <form>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Id" hidden class="control-label"></label>
+                <input asp-for="Id" hidden class="form-control" />
+                <span asp-validation-for="Id" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Recipient" class="control-label"></label>
+                <input asp-for="Recipient" class="form-control" id="recipient" placeholder="Enter recipient"/>
+                <span asp-validation-for="Recipient" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Vat" class="control-label"></label>
+                <input asp-for="Vat" class="form-control" type="number" id="vat"  placeholder="Enter vat"/>
+                <span asp-validation-for="Vat" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Total" class="control-label"></label>
+                <input asp-for="Total" class="form-control" id="total" value="" placeholder="Total Auto Generated" disabled />
+                <span asp-validation-for="Total" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="InvoiceDate" class="control-label"></label>
+                <input asp-for="InvoiceDate" class="form-control" id="date" type="date" asp-format="{0:yyyy-MM-ddTHH:mm}" placeholder="Enter date"/>
+                <span asp-validation-for="InvoiceDate" class="text-danger"></span>
+            </div>
+            <div class="container-fluid form-group mt-2 item" id="item">
+                <h5>Invoice Items</h5>
+                 <partial name="Item.cshtml"> 
+            </div>
+                <div class="d-flex flex-row-reverse">
+                    <a href="JavaScript:void(0);" class="btn btn-secondary btn-sm" id="AddItem" onclick="AddItem()"><span class="bi bi-plus"></span></a>
+                    </div>
+            <div class="form-group mt-2">
+                <input type="button" value="Submit" id="Btn_Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+  <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+    <script type="text/javascript">
+        //Add Items To the invoice
+             $(document).on('click',"date", function() {
+    $( "#date" ).datepicker({ minDate: -20, maxDate: "+1M +15D" });
+  } );
+        $(document).on('click', '#AddItem', function (e) {
+            getItems();
+            $.ajax({
+                url: '/Invoice/AddItem',
+                success: function (partialView) {
+                    $('.item').append(partialView);
+                }
+            });
+        });
+        $(document).on("click", "#Btn_Delete_Item", function () {
+            $(this).parent().parent().parent().remove();
+        });
+        function getInvoice() {
+            debugger
+            var invoice = {
+                Recipient: $("#recipient").val(),
+                Vat: $("#vat").val(),
+                Total: $("#total").val(),
+                InvoiceDate: $("#date").val()
+            } ;
+            return invoice;
+        }
+        function getItems() {
+            items = [];
+            var total = 0;
+            const name = document.querySelectorAll('#name');
+            const price= document.querySelectorAll('#price');
+            const qty= document.querySelectorAll('#qty');
+            const remark = document.querySelectorAll('#remark');
+            debugger
+            for (var i = 0; i < name.length; i++) {
+                if (name[i].value != '' && price[i].value != 0) {
+                    items.push({
+                        name: name[i].value,
+                        price: price[i].value,
+                        qty: qty[i].value,
+                        remark: remark[i].value
+                    });
+
+                   total += price[i].value * qty[i].value;
+                } 
+                document.getElementById("total").value = total
+
+                
+            }
+            return items;
+        }
+        $(document).on('click', '#Btn_Create', function (e) {
+            var invoice =   getInvoice();
+            var items = getItems();
+          console.log(window.location.pathname);
+            $.ajax({
+                type: "POST",
+                url: window.location.pathname,
+                data: {   invoice, items  },
+                cache: false,
+                success: function() {
+                    window.location.href="Index";
+                },
+                error: function() {
+                    window.location.href="Error";
+                }
+            });
+            return false;
+        });
+
+    </script> 
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/lib/dynamic-viewmodel-list/dvml.js"></script>
+    <script src="~/js/site.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+}
