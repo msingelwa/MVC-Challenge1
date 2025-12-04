@@ -10,7 +10,7 @@
   <ItemGroup>
     <PackageReference Include="DynamicVML" Version="1.5.1" />
     <PackageReference Include="Jehoel.AsyncDataAdapter.System.Data.SqlClient" Version="4.0.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design@6.0.14" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.14" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
   </ItemGroup>
 
