@@ -89,124 +89,51 @@ namespace MVC_Challenge.Models
                 });
                 items = new List<Item>(0);
             }
-
-            //try
-            //{
-            //    con.Open();
-            //    //sqlData.Fill(dt);
-            //    using (SqlCommand cmd = new SqlCommand(invQuery, con))
-            //    {
-            //        using (SqlDataReader sdr = cmd.ExecuteReader())
-            //        {
-            //            while (sdr.Read())
-            //            {
-            //                invoices.Add(new Invoice
-            //                {
-            //                    Id = Convert.ToInt32(sdr["Id"]),
-            //                    Recipient = sdr["Recipient"].ToString(),
-            //                    InvoiceDate = Convert.ToDateTime(sdr["Date"]),
-            //                    Total = Convert.ToDouble(sdr["Total"]),
-            //                    Vat = Convert.ToDouble(sdr["Vat"]),
-            //                });
-            //            }
-            //        }
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-
-            //    con.Close();
-            //}
             return invoices;
         }
 
         public Invoice Get(int id)
         {
-            connection();return null;
-        }
-
-        public bool Add(Invoice model)
-        {
             connection();
-            Random rnd = new Random();
-            int number = rnd.Next(1, 500);
-            model.Id = number;
-            model.Items.ForEach(it =>
-            {
-                model.Total += it.Price * it.Qty;
-            });
-
-            string query = "insert into Invoice values('" + model.Id + "'," +
-                "'" + model.Recipient +
-                "', '"+ model.Vat +
-                "', '"+ model.Total +"', " +
-                "'"+ model.InvoiceDate + "')";
-            SqlCommand cmd = new SqlCommand(query, con);
-
-            cmd.Parameters.AddWithValue("@Name", model.Recipient);
-            cmd.Parameters.AddWithValue("@Total", model.Total);
-            cmd.Parameters.Add("@Date", SqlDbType.DateTime2).Value =  model.InvoiceDate;
-            cmd.Parameters.AddWithValue("@Vat", model.Vat);
-            cmd.Parameters.AddWithValue("@Id", model.Id);
-
-            con.Open();
-            int i = cmd.ExecuteNonQuery();
-            con.Close();
-            if (i >= 1)
-            {
-                bool it = addItem(model.Items, model.Id);
-                if (it)
-                {
-                    return it;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
+            
+            return null;
         }
 
-        private bool addItem(List<Item> items, long id)
+public void Add(Invoice invoice)
+{
+    using var conn = new SqlConnection(_connectionString);
+    conn.Open();
+    using var tran = conn.BeginTransaction();
+    try
+    {
+        using var cmd = new SqlCommand(
+            "INSERT INTO Invoices (CustomerName, InvoiceDate, Total) OUTPUT INSERTED.Id VALUES (@name, @date, @total)",
+            conn, tran);
+        cmd.Parameters.AddWithValue("@name", invoice.CustomerName ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@date", invoice.Date);
+        cmd.Parameters.AddWithValue("@total", invoice.Total);
+        var newId = (int)cmd.ExecuteScalar();
+
+        foreach (var item in invoice.Items ?? Enumerable.Empty<Item>())
         {
-            Random random = new Random();
-
-            bool flag = false;
-
-            for(int i = 0; i < items.Count; i++)
-            {
-                var item = items[i];
-                item.Id = random.Next(12, 100);
-                item.InvoiceId = id;
-                int a = (int) item.Remark;
-                string query = "insert into Item values('" + item.Id + "'," +
-                "'" + item.Name +
-                "', '" + item.Qty +
-                "', '" + item.Price + 
-                "', '" + item.InvoiceId + 
-                "', '" + (int)item.Remark + "')";
-                SqlCommand cmd = new SqlCommand(query, con);
-                cmd.Parameters.AddWithValue("@Name", item.Name);
-                cmd.Parameters.AddWithValue("@Qty", item.Qty);
-                cmd.Parameters.AddWithValue("@Price", item.Price);
-                cmd.Parameters.AddWithValue("@Remark", (int)item.Remark);
-                cmd.Parameters.AddWithValue("@Id", item.Id);
-
-                con.Open();
-                int x = cmd.ExecuteNonQuery();
-                con.Close();
-
-                if (x >= 1)
-                    flag = true;
-                else
-                    flag =false;
-            }
-
-            return flag;
+            using var cmdItem = new SqlCommand(
+                "INSERT INTO Items (InvoiceId, Description, Quantity, UnitPrice) VALUES (@invId, @desc, @qty, @price)",
+                conn, tran);
+            cmdItem.Parameters.AddWithValue("@invId", newId);
+            cmdItem.Parameters.AddWithValue("@desc", item.Description ?? (object)DBNull.Value);
+            cmdItem.Parameters.AddWithValue("@qty", item.Quantity);
+            cmdItem.Parameters.AddWithValue("@price", item.UnitPrice);
+            cmdItem.ExecuteNonQuery();
         }
+
+        tran.Commit();
+    }
+    catch
+    {
+        tran.Rollback();
+        throw;
+    }
+}
 
         public Invoice Details(int id)
         {
