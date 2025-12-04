@@ -43,6 +43,8 @@
                     <a href="JavaScript:void(0);" class="btn btn-secondary btn-sm" id="AddItem" onclick="AddItem()"><span class="bi bi-plus"></span></a>
                     </div>
             <div class="form-group mt-2">
+                 @Html.AntiForgeryToken()
+                <!-- form fields for Invoice and Items -->
                 <input type="button" value="Submit" id="Btn_Create" class="btn btn-primary" />
             </div>
         </form>
